@@ -1,6 +1,6 @@
 ## Trabalho Final Linguagens de Programação - Interpretador
 
-1. Adição de um construtor (formalizado no livro [Types and Programming Languages](https://theswissbay.ch/pdf/Gentoomen%20Library/Maths/Comp%20Sci%20Math/Benjamin_C._Pierce-Types_and_Programming_Languages-The_MIT_Press%282002%29.pdf), de Benjamin Pierce) e provado pelo professor.
+1. Adição de um construtor (formalizado no livro [Types and Programming Languages](https://github.com/MPRI/M2-4-2/blob/master/Types%20and%20Programming%20Languages.pdf), de Benjamin Pierce) e provado pelo professor.
 2. Implementação de um parser (usando um gerador de parsers para Haskell) para a linguagem desenvolvida (Geradores de parser para Haskell: GLL, Happy, Megaparsec, Parsec, Peggy, Polyparsec).
 
 ## Avaliação 
