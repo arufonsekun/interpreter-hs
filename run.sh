@@ -1,2 +1,1 @@
-ghc --make Main.hs -o main
-./main
+cat Examples/sum.si | runghc Main.hs
