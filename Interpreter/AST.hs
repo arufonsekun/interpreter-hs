@@ -6,10 +6,14 @@ data Expr = TRUE
             | ADD Expr Expr
             | AND Expr Expr
             | IF  Expr Expr Expr
+            | PAIR Expr Expr
+            | FIRST Expr
+            | SECOND Expr
             deriving (Show, Eq)
 
 data TYPE = T_NUM
           | T_BOOL
+          | T_PAIR
           deriving Show
 
 -- Construtor viável de adicionar:
