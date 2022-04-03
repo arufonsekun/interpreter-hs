@@ -15,6 +15,9 @@ import Interpreter.AST
     '+'   { TokenADD }
     '&'   { TokenAND }
     if    { TokenIF  }
+    '{'   { TokenPairOpening }
+    ','   { TokenPairSeparator }
+    '}'   { TokenPairClosing }
 %%
 
 Exp  : true { TRUE }
@@ -23,6 +26,7 @@ Exp  : true { TRUE }
      | Exp '+' Exp { ADD $1 $3 }
      | Exp '&' Exp { AND $1 $3 }
      | if Exp Exp Exp { IF $2 $3 $4 }
+     | '{' Exp ',' Exp '}' { PAIR $2 $4 }
 
 {
 parseError :: [Token] -> a
@@ -34,19 +38,25 @@ data Token = TokenTRUE
             | TokenADD
             | TokenAND
             | TokenIF
+            | TokenPairOpening
+            | TokenPairSeparator
+            | TokenPairClosing
             deriving Show
 
 lexer :: String -> [Token]
 lexer [] = []
 lexer (c : cs)
     | isSpace c = lexer cs
-    | isAlpha c = lexBool (c : cs)
+    | isAlpha c = lexKeyWords (c : cs)
     | isDigit c = lexNum (c : cs)
 lexer ('+' : cs) = TokenADD : lexer cs
 lexer ('&' : cs) = TokenAND : lexer cs
+lexer ('{' : cs) = TokenPairOpening: lexer cs
+lexer (',' : cs) = TokenPairSeparator: lexer cs
+lexer ('}' : cs) = TokenPairClosing: lexer cs
 lexer _ = error "Lexical error: caracter inválido!"
 
-lexBool cs = case span isAlpha cs of
+lexKeyWords cs = case span isAlpha cs of
             ("true", rest) -> TokenTRUE : lexer rest
             ("false", rest) -> TokenFALSE : lexer rest
             ("if", rest) -> TokenIF: lexer rest
