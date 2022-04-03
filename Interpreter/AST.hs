@@ -5,8 +5,8 @@ data Expr = TRUE
             | NUM Int
             | ADD Expr Expr
             | AND Expr Expr
+            | IF  Expr Expr Expr
             deriving (Show, Eq)
-            -- | IF  Expr Expr Expr
 
 data TYPE = T_NUM
           | T_BOOL

@@ -1,7 +1,7 @@
 {
-    module Interpreter.Parser where
-    import Data.Char
-    import Interpreter.AST
+module Interpreter.Parser where
+import Data.Char
+import Interpreter.AST
 }
 
 %name parser
@@ -14,7 +14,7 @@
     num   { TokenNUM $$ }
     '+'   { TokenADD }
     '&'   { TokenAND }
-    -- if    { TokenIF  }
+    if    { TokenIF  }
 %%
 
 Exp  : true { TRUE }
@@ -22,7 +22,7 @@ Exp  : true { TRUE }
      | num  { NUM $1 }
      | Exp '+' Exp { ADD $1 $3 }
      | Exp '&' Exp { AND $1 $3 }
-    --  | if Exp Exp Exp { IF $1 $2 $3 }
+     | if Exp Exp Exp { IF $2 $3 $4 }
 
 {
 parseError :: [Token] -> a
@@ -33,7 +33,7 @@ data Token = TokenTRUE
             | TokenNUM Int
             | TokenADD
             | TokenAND
-            -- | TokenIF
+            | TokenIF
             deriving Show
 
 lexer :: String -> [Token]
@@ -49,6 +49,7 @@ lexer _ = error "Lexical error: caracter inválido!"
 lexBool cs = case span isAlpha cs of
             ("true", rest) -> TokenTRUE : lexer rest
             ("false", rest) -> TokenFALSE : lexer rest
+            ("if", rest) -> TokenIF: lexer rest
 
 lexNum cs = case span isDigit cs of
             (num, rest) -> TokenNUM (read num) : lexer rest
