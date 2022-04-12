@@ -18,9 +18,9 @@ import Interpreter.AST
     '{'   { TokenPairOpening }
     ','   { TokenPairSeparator }
     '}'   { TokenPairClosing }
-    '.'  { TokenProjection }
-    fst  { TokenFirst }
-    snd  { TokenSecond }
+    '.'   { TokenProjection }
+    fst   { TokenFirst }
+    snd   { TokenSecond }
 %%
 
 Exp  : true { TRUE }
