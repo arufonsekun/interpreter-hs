@@ -13,7 +13,7 @@ data Expr = TRUE
 
 data TYPE = T_NUM
           | T_BOOL
-          | T_PAIR
+          | T_PAIR TYPE TYPE
           deriving Show
 
 -- Construtor viável de adicionar:

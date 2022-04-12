@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-overlapping-patterns #-}
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 module Interpreter.Analyzer where
 import Interpreter.AST
 
@@ -57,7 +58,6 @@ step (PAIR e1 e2) = case step e1 of
                                                 else step(PAIR e1' e1'')
                         e1''' -> case step e2 of
                                 e2' -> PAIR e1''' e2'
-
 step e = e
 
 typeof :: Expr -> Maybe TYPE
@@ -76,6 +76,22 @@ typeof (IF e1 e2 e3) = case typeof e1 of
                                         (Just T_NUM, Just T_NUM)   -> Just T_NUM
                                         _                          -> Nothing
                         _            -> Nothing
+typeof (PAIR (NUM _) (NUM _)) = Just (T_PAIR T_NUM T_NUM)
+typeof (PAIR (NUM _) FALSE) = Just (T_PAIR T_NUM T_BOOL)
+typeof (PAIR (NUM _) TRUE) = Just (T_PAIR T_NUM T_BOOL)
+typeof (PAIR TRUE TRUE) = Just (T_PAIR T_BOOL T_BOOL)
+typeof (PAIR TRUE FALSE) = Just (T_PAIR T_BOOL T_BOOL)
+typeof (PAIR FALSE FALSE) = Just (T_PAIR T_BOOL T_BOOL)
+typeof (PAIR FALSE TRUE) = Just (T_PAIR T_BOOL T_BOOL)
+typeof (PAIR TRUE (NUM _)) = Just (T_PAIR T_BOOL T_NUM)
+typeof (PAIR FALSE (NUM _)) = Just (T_PAIR T_BOOL T_NUM)
+typeof (PAIR e1 e2) = case typeof e1 of
+                        Just e1' -> case typeof e2 of
+                                        Just e2' -> Just (T_PAIR e1' e2')
+typeof (FIRST (PAIR e1 _)) = case typeof e1 of
+                                Just e1' -> Just e1'
+typeof (SECOND (PAIR _ e2)) = case typeof e2 of
+                                Just e2' -> Just e2'
 
 evaluate :: Expr -> Expr
 evaluate e = case step e of
