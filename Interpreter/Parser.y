@@ -18,6 +18,9 @@ import Interpreter.AST
     '{'   { TokenPairOpening }
     ','   { TokenPairSeparator }
     '}'   { TokenPairClosing }
+    '.'  { TokenProjection }
+    fst  { TokenFirst }
+    snd  { TokenSecond }
 %%
 
 Exp  : true { TRUE }
@@ -27,6 +30,8 @@ Exp  : true { TRUE }
      | Exp '&' Exp { AND $1 $3 }
      | if Exp Exp Exp { IF $2 $3 $4 }
      | '{' Exp ',' Exp '}' { PAIR $2 $4 }
+     | '{' Exp ',' Exp '}' '.' fst { FIRST (PAIR $2 $4) }
+     | '{' Exp ',' Exp '}' '.' snd { SECOND (PAIR $2 $4) }
 
 {
 parseError :: [Token] -> a
@@ -41,6 +46,9 @@ data Token = TokenTRUE
             | TokenPairOpening
             | TokenPairSeparator
             | TokenPairClosing
+            | TokenProjection
+            | TokenFirst
+            | TokenSecond
             deriving Show
 
 lexer :: String -> [Token]
@@ -54,12 +62,15 @@ lexer ('&' : cs) = TokenAND : lexer cs
 lexer ('{' : cs) = TokenPairOpening: lexer cs
 lexer (',' : cs) = TokenPairSeparator: lexer cs
 lexer ('}' : cs) = TokenPairClosing: lexer cs
+lexer ('.' : cs) = TokenProjection: lexer cs
 lexer _ = error "Lexical error: caracter inválido!"
 
 lexKeyWords cs = case span isAlpha cs of
             ("true", rest) -> TokenTRUE : lexer rest
             ("false", rest) -> TokenFALSE : lexer rest
             ("if", rest) -> TokenIF: lexer rest
+            ("fst", rest) -> TokenFirst: lexer rest
+            ("snd", rest) -> TokenSecond: lexer rest
 
 lexNum cs = case span isDigit cs of
             (num, rest) -> TokenNUM (read num) : lexer rest
