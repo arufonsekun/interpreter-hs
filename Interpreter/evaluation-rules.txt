@@ -1,0 +1,9 @@
+O que eu entendi dessas regras foi mais ou menos isso:
+
+E-PairBeta1: se tu faz um first e teu pair são dois valores, retorna o primeiro (easy).
+E-PairBeta2: se tu faz um second e teu pair são dois valores, retorna o segundo (easy).
+E-Proj1: se tu faz um first e teu par é um termo (pode ser 1+1, true and false, ou um pair) e um valor, avalia o primeiro termo e daí faz o first nele. Ex {1+1, 3}.1 -> 2, {{1+1, 1}, 2}.1 -> {2, 1}
+E-Proj2: mesmo caso que o E-Proj1 só que com o segundo.
+E-Pair1: se tu tem um pair de dois termos ({1+1, true and false}) avalia o primeiro. Ex: {1+1, true and false} -> {2, true and false}
+E-Pair2: se tu tem um pair de um valor e um termo ({2, true and false}) avalia o segundo. Ex: {2, true and false} -> {2, false}. E-Pair1 e E-Pair2 meio que se complementam.
+
