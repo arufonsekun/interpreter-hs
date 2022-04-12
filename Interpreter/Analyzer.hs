@@ -22,16 +22,16 @@ step (FIRST (PAIR (NUM n1) _)) = NUM n1
 step (FIRST (PAIR TRUE _)) = TRUE
 step (FIRST (PAIR FALSE _)) = FALSE
 
+-- (E-PairBeta2)
+step (SECOND (PAIR _ (NUM n1))) = NUM n1
+step (SECOND (PAIR _ TRUE)) = TRUE
+step (SECOND (PAIR _ FALSE)) = FALSE
+
 step (FIRST (PAIR e1 _)) = case step e1 of
                             e1' ->  e1'
 -- (E-Proj1)
 step (FIRST e) = case step e of
                   e' -> FIRST e'
-
--- (E-PairBeta2)
-step (SECOND (PAIR _ (NUM n1))) = NUM n1
-step (SECOND (PAIR _ TRUE)) = TRUE
-step (SECOND (PAIR _ FALSE)) = FALSE
 
 step (SECOND (PAIR _ e1)) = case step e1 of
                          e1' ->  e1'
@@ -48,7 +48,15 @@ step (PAIR TRUE e2) = case step e2 of
                            e2' -> PAIR TRUE e2'
 -- (E-Pair1)
 step (PAIR e1 e2) = case step e1 of
-                      e1' -> PAIR e1' e2
+                        PAIR e1' e1'' -> if step(PAIR e1' e1'') == PAIR e1' e1''
+                                                then case step e2 of
+                                                        PAIR e2' e2'' -> if step(PAIR e2' e2'') == PAIR e2' e2''
+                                                                                then PAIR (PAIR e1' e1'') (PAIR e2' e2'')
+                                                                                else step (PAIR e2' e2'')
+                                                        e2' -> PAIR (PAIR e1' e1'') e2'
+                                                else step(PAIR e1' e1'')
+                        e1''' -> case step e2 of
+                                e2' -> PAIR e1''' e2'
 
 step e = e
 
