@@ -15,18 +15,18 @@ data HappyAbsSyn t4
 	| HappyAbsSyn4 t4
 
 happyExpList :: Happy_Data_Array.Array Int Int
-happyExpList = Happy_Data_Array.listArray (0,43) ([1648,4,0,6,0,26368,6592,2432,508,49255,25,0,32512,6592,4480,0,0,0
+happyExpList = Happy_Data_Array.listArray (0,48) ([1648,32,0,3072,0,0,39936,14337,32771,57353,49167,32793,51,0,0,508,824,4480,0,32768,0,6,0,0,0
 	])
 
 {-# NOINLINE happyExpListPerState #-}
 happyExpListPerState st =
     token_strs_expected
-  where token_strs = ["error","%dummy","%start_parser","Exp","true","false","num","'+'","'&'","if","'{'","','","'}'","%eof"]
-        bit_start = st * 14
-        bit_end = (st + 1) * 14
+  where token_strs = ["error","%dummy","%start_parser","Exp","true","false","num","'+'","'&'","if","'{'","','","'}'","'.'","fst","snd","%eof"]
+        bit_start = st * 17
+        bit_end = (st + 1) * 17
         read_bit = readArrayBit happyExpList
         bits = map read_bit [bit_start..bit_end - 1]
-        bits_indexed = zip bits [0..13]
+        bits_indexed = zip bits [0..16]
         token_strs_expected = concatMap f bits_indexed
         f (False, _) = []
         f (True, nr) = [token_strs !! nr]
@@ -46,7 +46,7 @@ action_2 _ = happyReduce_1
 
 action_3 (8) = happyShift action_10
 action_3 (9) = happyShift action_11
-action_3 (14) = happyAccept
+action_3 (17) = happyAccept
 action_3 _ = happyFail (happyExpListPerState 3)
 
 action_4 _ = happyReduce_2
@@ -135,7 +135,16 @@ action_17 (8) = happyShift action_10
 action_17 (9) = happyShift action_11
 action_17 _ = happyReduce_6
 
+action_18 (14) = happyShift action_19
 action_18 _ = happyReduce_7
+
+action_19 (15) = happyShift action_20
+action_19 (16) = happyShift action_21
+action_19 _ = happyFail (happyExpListPerState 19)
+
+action_20 _ = happyReduce_8
+
+action_21 _ = happyReduce_9
 
 happyReduce_1 = happySpecReduce_1  4 happyReduction_1
 happyReduction_1 _
@@ -195,8 +204,34 @@ happyReduction_7 (_ `HappyStk`
 		 (PAIR happy_var_2 happy_var_4
 	) `HappyStk` happyRest
 
+happyReduce_8 = happyReduce 7 4 happyReduction_8
+happyReduction_8 (_ `HappyStk`
+	_ `HappyStk`
+	_ `HappyStk`
+	(HappyAbsSyn4  happy_var_4) `HappyStk`
+	_ `HappyStk`
+	(HappyAbsSyn4  happy_var_2) `HappyStk`
+	_ `HappyStk`
+	happyRest)
+	 = HappyAbsSyn4
+		 (FIRST (PAIR happy_var_2 happy_var_4)
+	) `HappyStk` happyRest
+
+happyReduce_9 = happyReduce 7 4 happyReduction_9
+happyReduction_9 (_ `HappyStk`
+	_ `HappyStk`
+	_ `HappyStk`
+	(HappyAbsSyn4  happy_var_4) `HappyStk`
+	_ `HappyStk`
+	(HappyAbsSyn4  happy_var_2) `HappyStk`
+	_ `HappyStk`
+	happyRest)
+	 = HappyAbsSyn4
+		 (SECOND (PAIR happy_var_2 happy_var_4)
+	) `HappyStk` happyRest
+
 happyNewToken action sts stk [] =
-	action 14 14 notHappyAtAll (HappyState action) sts stk []
+	action 17 17 notHappyAtAll (HappyState action) sts stk []
 
 happyNewToken action sts stk (tk:tks) =
 	let cont i = action i i tk (HappyState action) sts stk tks in
@@ -210,10 +245,13 @@ happyNewToken action sts stk (tk:tks) =
 	TokenPairOpening -> cont 11;
 	TokenPairSeparator -> cont 12;
 	TokenPairClosing -> cont 13;
+	TokenProjection -> cont 14;
+	TokenFirst -> cont 15;
+	TokenSecond -> cont 16;
 	_ -> happyError' ((tk:tks), [])
 	}
 
-happyError_ explist 14 tk tks = happyError' (tks, explist)
+happyError_ explist 17 tk tks = happyError' (tks, explist)
 happyError_ explist _ tk tks = happyError' ((tk:tks), explist)
 
 newtype HappyIdentity a = HappyIdentity a
@@ -257,6 +295,9 @@ data Token = TokenTRUE
             | TokenPairOpening
             | TokenPairSeparator
             | TokenPairClosing
+            | TokenProjection
+            | TokenFirst
+            | TokenSecond
             deriving Show
 
 lexer :: String -> [Token]
@@ -270,12 +311,15 @@ lexer ('&' : cs) = TokenAND : lexer cs
 lexer ('{' : cs) = TokenPairOpening: lexer cs
 lexer (',' : cs) = TokenPairSeparator: lexer cs
 lexer ('}' : cs) = TokenPairClosing: lexer cs
+lexer ('.' : cs) = TokenProjection: lexer cs
 lexer _ = error "Lexical error: caracter inválido!"
 
 lexKeyWords cs = case span isAlpha cs of
             ("true", rest) -> TokenTRUE : lexer rest
             ("false", rest) -> TokenFALSE : lexer rest
             ("if", rest) -> TokenIF: lexer rest
+            ("fst", rest) -> TokenFirst: lexer rest
+            ("snd", rest) -> TokenSecond: lexer rest
 
 lexNum cs = case span isDigit cs of
             (num, rest) -> TokenNUM (read num) : lexer rest
