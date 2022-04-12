@@ -1,1 +1,1 @@
-cat Examples/sum.si | runghc Main.hs
+cat $1 | runghc Main.hs
