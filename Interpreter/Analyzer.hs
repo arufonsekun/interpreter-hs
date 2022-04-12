@@ -88,10 +88,13 @@ typeof (PAIR FALSE (NUM _)) = Just (T_PAIR T_BOOL T_NUM)
 typeof (PAIR e1 e2) = case typeof e1 of
                         Just e1' -> case typeof e2 of
                                         Just e2' -> Just (T_PAIR e1' e2')
+                        _        -> Nothing
 typeof (FIRST (PAIR e1 _)) = case typeof e1 of
                                 Just e1' -> Just e1'
+                                _        -> Nothing
 typeof (SECOND (PAIR _ e2)) = case typeof e2 of
                                 Just e2' -> Just e2'
+                                _        -> Nothing
 
 evaluate :: Expr -> Expr
 evaluate e = case step e of
