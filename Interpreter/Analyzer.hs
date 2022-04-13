@@ -30,13 +30,13 @@ step (SECOND (PAIR _ FALSE)) = FALSE
 
 step (FIRST (PAIR e1 _)) = case step e1 of
                             e1' ->  e1'
--- (E-Proj1)
+-- (E-Proj1) caso e retornar um pair
 step (FIRST e) = case step e of
                   e' -> FIRST e'
 
 step (SECOND (PAIR _ e1)) = case step e1 of
                          e1' ->  e1'
--- (E-Proj2)
+-- (E-Proj2) caso e retornar um pair
 step (SECOND e) = case step e of
                   e' -> SECOND e'
 
